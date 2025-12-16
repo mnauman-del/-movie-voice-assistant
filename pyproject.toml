@@ -10,7 +10,8 @@ requires-python = ">=3.9"
 
 dependencies = [
     "aiohttp>=3.13.2",
-    "livekit-agents[deepgram,silero,turn-detector]~=1.2",
+    "langfuse>=3.7.0",
+    "livekit-agents[deepgram,groq,silero,turn-detector]~=1.2",
     "livekit-plugins-noise-cancellation~=0.2",
     "python-dotenv",
 ]
