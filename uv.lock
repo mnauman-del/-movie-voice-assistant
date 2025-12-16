@@ -13,7 +13,8 @@ name = "agent-starter-python"
 version = "1.0.0"
 source = { editable = "." }
 dependencies = [
-    { name = "livekit-agents", extra = ["silero", "turn-detector"] },
+    { name = "aiohttp" },
+    { name = "livekit-agents", extra = ["deepgram", "silero", "turn-detector"] },
     { name = "livekit-plugins-noise-cancellation" },
     { name = "python-dotenv" },
 ]
@@ -29,7 +30,8 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "livekit-agents", extras = ["silero", "turn-detector"], specifier = "~=1.3" },
+    { name = "aiohttp", specifier = ">=3.13.2" },
+    { name = "livekit-agents", extras = ["deepgram", "silero", "turn-detector"], specifier = "~=1.2" },
     { name = "livekit-plugins-noise-cancellation", specifier = "~=0.2" },
     { name = "python-dotenv" },
 ]
@@ -674,7 +676,7 @@ name = "exceptiongroup"
 version = "1.3.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "typing-extensions", marker = "python_full_version < '3.13'" },
+    { name = "typing-extensions", marker = "python_full_version < '3.11'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/50/79/66800aadf48771f6b62f7eb014e352e5d06856655206165d775e675a02c9/exceptiongroup-1.3.1.tar.gz", hash = "sha256:8b412432c6055b0b7d14c310000ae93352ed6754f70fa8f7c34141f91c4e3219", size = 30371, upload-time = "2025-11-21T23:01:54.787Z" }
 wheels = [
@@ -1294,6 +1296,14 @@ wheels = [
 ]
 
 [package.optional-dependencies]
+codecs = [
+    { name = "numpy", version = "2.0.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
+    { name = "numpy", version = "2.2.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.10.*'" },
+    { name = "numpy", version = "2.3.5", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
+]
+deepgram = [
+    { name = "livekit-plugins-deepgram" },
+]
 silero = [
     { name = "livekit-plugins-silero" },
 ]
@@ -1357,6 +1367,21 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/9b/b8/fbb0063c160d374e1758c8856ca3623eccff666fb0684437b2bdff32f086/livekit_blingfire-1.1.0-cp39-cp39-manylinux_2_24_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:986335930d7f33fbd98bd6269a818a08bb35d333ce99af82f0b1746bb6938992", size = 165667, upload-time = "2025-12-16T00:48:36.81Z" },
     { url = "https://files.pythonhosted.org/packages/00/81/8ac0b1711ac75266332093377d1b812245858ce2ef65e72bca0c89db4cac/livekit_blingfire-1.1.0-cp39-cp39-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:5f27e13f3b1b59d832d637d92f6023b2b8f5d9b6021470d03f29f079be75c033", size = 173309, upload-time = "2025-12-16T00:48:38.538Z" },
     { url = "https://files.pythonhosted.org/packages/26/5e/02ddf61a9ea2f2d1d40083347107659b6dfc67a39e8a7e1b6e69de8f84b8/livekit_blingfire-1.1.0-cp39-cp39-win_amd64.whl", hash = "sha256:ee7208103634332b838c32ba61bd31903aba4dbde1b2b5d9eafbff95ea6e9286", size = 129789, upload-time = "2025-12-16T00:48:39.39Z" },
+]
+
+[[package]]
+name = "livekit-plugins-deepgram"
+version = "1.3.6"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "livekit-agents", extra = ["codecs"] },
+    { name = "numpy", version = "2.0.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
+    { name = "numpy", version = "2.2.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.10.*'" },
+    { name = "numpy", version = "2.3.5", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/b5/81/db8c96cb775e2512a0d822b20865e45aca144c438e9a3fa4cb824cfe5705/livekit_plugins_deepgram-1.3.6.tar.gz", hash = "sha256:39df68a4e8dbd4bbf09b09263c1f935b0a26927830214fcb5e3c6e019c2eb880", size = 15291, upload-time = "2025-12-03T19:09:47.105Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/fd/b8/abbbb715e6ace49d224a7803f7742f2bc91fa1ff93df40a47d7ae2126433/livekit_plugins_deepgram-1.3.6-py3-none-any.whl", hash = "sha256:37388f217cc2394453cf7eaf6ba710c3531f411fd4fff0de2ad6f99830a16182", size = 21193, upload-time = "2025-12-03T19:09:46.218Z" },
 ]
 
 [[package]]

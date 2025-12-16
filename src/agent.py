@@ -1,5 +1,5 @@
 import logging
-
+import asyncio
 from dotenv import load_dotenv
 from livekit import rtc
 from livekit.agents import (
@@ -12,13 +12,43 @@ from livekit.agents import (
     inference,
     room_io,
 )
+import os
+from livekit.agents import function_tool, RunContext
 from livekit.plugins import noise_cancellation, silero
 from livekit.plugins.turn_detector.multilingual import MultilingualModel
+from livekit.plugins import deepgram
+import aiohttp
 
 logger = logging.getLogger("agent")
 
 load_dotenv(".env.local")
 
+os.environ["MOVIES_READ_ACCESS_TOKEN"] = os.getenv("MOVIES_READ_ACCESS_TOKEN")
+os.environ["DEEPGRAM_API_KEY"] = os.getenv("DEEPGRAM_API_KEY")
+
+
+headers = {
+    "accept": "application/json",
+    "Authorization": f"Bearer {os.getenv('MOVIES_READ_ACCESS_TOKEN')}",
+}
+
+async def fetch_movie_data(query: str):
+    params = {
+        "query": query,
+        "include_adult": "false",
+        "language": "en-US",
+        "page": 1,
+    }
+    logger.info(f"Test fetch movie params: {params}")
+    async with aiohttp.ClientSession() as session:
+        async with session.get(
+            "https://api.themoviedb.org/3/search/movie",
+            headers=headers,
+            params=params,
+        ) as response:
+            return await response.json()
+
+    
 
 class Assistant(Agent):
     def __init__(self) -> None:
@@ -28,6 +58,21 @@ class Assistant(Agent):
             Your responses are concise, to the point, and without any complex formatting or punctuation including emojis, asterisks, or other symbols.
             You are curious, friendly, and have a sense of humor.""",
         )
+
+    @function_tool
+    async def lookup_movie(self, context: RunContext, query: str):
+        """Use this tool to look up information about movies.
+
+        Args:
+            query: The movie title or keyword to search for.
+        """
+
+        logger.info(f"Looking up movie for {query}")
+
+        res = await fetch_movie_data(query)
+        res = res['results'][0]
+
+        return f"Information about the movie '{query}': {res}"
 
     # To add tools, use the @function_tool decorator.
     # Here's an example that adds a simple weather tool.
@@ -69,14 +114,14 @@ async def my_agent(ctx: JobContext):
     session = AgentSession(
         # Speech-to-text (STT) is your agent's ears, turning the user's speech into text that the LLM can understand
         # See all available models at https://docs.livekit.io/agents/models/stt/
-        stt=inference.STT(model="assemblyai/universal-streaming", language="en"),
+        stt=deepgram.STTv2(model="flux-general-en", eager_eot_threshold=0.4),
         # A Large Language Model (LLM) is your agent's brain, processing user input and generating a response
         # See all available models at https://docs.livekit.io/agents/models/llm/
         llm=inference.LLM(model="openai/gpt-4.1-mini"),
         # Text-to-speech (TTS) is your agent's voice, turning the LLM's text into speech that the user can hear
         # See all available models as well as voice selections at https://docs.livekit.io/agents/models/tts/
-        tts=inference.TTS(
-            model="cartesia/sonic-3", voice="9626c31c-bec5-4cca-baa8-f8ba9e84c8bc"
+        tts=deepgram.TTS(
+            model="aura-asteria-en",
         ),
         # VAD and turn detection are used to determine when the user is speaking and when the agent should respond
         # See more at https://docs.livekit.io/agents/build/turns
@@ -120,7 +165,6 @@ async def my_agent(ctx: JobContext):
 
     # Join the room and connect to the user
     await ctx.connect()
-
 
 if __name__ == "__main__":
     cli.run_app(server)
