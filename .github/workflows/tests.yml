@@ -2,33 +2,40 @@ name: Tests
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   test:
     runs-on: ubuntu-latest
-    
+
     steps:
-    - uses: actions/checkout@v4
-    
-    - name: Install uv
-      uses: astral-sh/setup-uv@v1
-      with:
-        version: "latest"
-    
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: "3.12"
-    
-    - name: Install dependencies
-      run: UV_GIT_LFS=1 uv sync --dev
-        
-    - name: Run tests
-      env:
-        LIVEKIT_URL: ${{ secrets.LIVEKIT_URL }}
-        LIVEKIT_API_KEY: ${{ secrets.LIVEKIT_API_KEY }}
-        LIVEKIT_API_SECRET: ${{ secrets.LIVEKIT_API_SECRET }}
-      run: uv run pytest -v
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v1
+        with:
+          version: "latest"
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: UV_GIT_LFS=1 uv sync --dev
+
+      - name: Run tests
+        env:
+          LIVEKIT_URL: ${{ secrets.LIVEKIT_URL }}
+          LIVEKIT_API_KEY: ${{ secrets.LIVEKIT_API_KEY }}
+          LIVEKIT_API_SECRET: ${{ secrets.LIVEKIT_API_SECRET }}
+          MOVIES_READ_ACCESS_TOKEN: ${{ secrets.MOVIES_READ_ACCESS_TOKEN }}
+          MOVIES_API_KEY: ${{ secrets.MOVIES_API_KEY }}
+          DEEPGRAM_API_KEY: ${{ secrets.DEEPGRAM_API_KEY }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          LANGFUSE_SECRET_KEY: ${{ secrets.LANGFUSE_SECRET_KEY }}
+          LANGFUSE_PUBLIC_KEY: ${{ secrets.LANGFUSE_PUBLIC_KEY }}
+          LANGFUSE_BASE_URL: ${{ secrets.LANGFUSE_BASE_URL }}
+        run: uv run pytest -v
