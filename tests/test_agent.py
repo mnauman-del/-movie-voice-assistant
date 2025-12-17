@@ -1,11 +1,16 @@
 import pytest
 from livekit.agents import AgentSession, inference, llm
+from livekit.plugins import groq
 
 from agent import Assistant
 
+from dotenv import load_dotenv
+load_dotenv(".env.local")
+
+
 
 def _llm() -> llm.LLM:
-    return inference.LLM(model="openai/gpt-4.1-mini")
+    return groq.LLM(model="openai/gpt-oss-120b")
 
 
 @pytest.mark.asyncio

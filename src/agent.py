@@ -27,10 +27,6 @@ logger = logging.getLogger("agent")
 
 load_dotenv(".env.local")
 
-os.environ["MOVIES_READ_ACCESS_TOKEN"] = os.getenv("MOVIES_READ_ACCESS_TOKEN")
-os.environ["DEEPGRAM_API_KEY"] = os.getenv("DEEPGRAM_API_KEY")
-os.environ["GROQ_API_KEY"] = os.getenv("GROQ_API_KEY")
-
 headers = {
     "accept": "application/json",
     "Authorization": f"Bearer {os.getenv('MOVIES_READ_ACCESS_TOKEN')}",
@@ -66,7 +62,8 @@ def setup_langfuse(
     host = host or os.getenv("LANGFUSE_BASE_URL")
  
     if not public_key or not secret_key or not host:
-        raise ValueError("LANGFUSE_PUBLIC_KEY, LANGFUSE_SECRET_KEY, and LANGFUSE_BASE_URL must be set")
+        return print("Langfuse not configured, skipping setup")
+        #raise ValueError("LANGFUSE_PUBLIC_KEY, LANGFUSE_SECRET_KEY, and LANGFUSE_BASE_URL must be set")
  
     langfuse_auth = base64.b64encode(f"{public_key}:{secret_key}".encode()).decode()
     os.environ["OTEL_EXPORTER_OTLP_ENDPOINT"] = f"{host.rstrip('/')}/api/public/otel"
@@ -172,7 +169,7 @@ async def my_agent(ctx: JobContext):
         "room": ctx.room.name,
     }
 
-    # Set up a voice AI pipeline using OpenAI, Cartesia, AssemblyAI, and the LiveKit turn detector
+    # Set up a voice AI pipeline
     stt = deepgram.STTv2(model="flux-general-en", eager_eot_threshold=0.4)
     llm = groq.LLM(model="openai/gpt-oss-120b")
     tts = deepgram.TTS(model="aura-asteria-en")
